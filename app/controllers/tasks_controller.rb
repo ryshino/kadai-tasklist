@@ -1,8 +1,13 @@
 class TasksController < ApplicationController
   before_action :set_task, only: [:show, :edit, :update, :destroy]
+  before_action :require_user_logged_in
+
   
   def index
-    @tasks = Task.all
+    if logged_in?
+      @task = current_user.tasks.build
+      @tasks = current_user.tasks.order(id: :desc).page(params[:page])
+    end
   end
 
   def show
@@ -13,13 +18,13 @@ class TasksController < ApplicationController
   end
 
   def create
-    @task = Task.new(task_params)
+    @task = current_user.tasks.build(task_params)
     
     if @task.save
-      flash[:success] = "タスクを追加しました"
-      redirect_to @task
+      flash[:notice] = 'タスクを追加しました。'
+      redirect_to root_url
     else
-      flash.now[:danger] = "タスクが追加できませんでした"
+      flash.now[:notice] = "タスクが追加できませんでした"
       render :new
     end
   end
@@ -48,7 +53,11 @@ class TasksController < ApplicationController
   private
   
   def set_task
-    @task = Task.find(params[:id])
+    @micropost = current_user.microposts.find_by(id: params[:id])
+    
+    unless @micropost
+      redirect_to root_url
+    end
   end
   
   def task_params
