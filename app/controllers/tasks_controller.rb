@@ -4,10 +4,8 @@ class TasksController < ApplicationController
 
   
   def index
-    if logged_in?
       @task = current_user.tasks.build
       @tasks = current_user.tasks.order(id: :desc).page(params[:page])
-    end
   end
 
   def show
@@ -47,15 +45,15 @@ class TasksController < ApplicationController
     @task.destroy
     
     flash[:success] = "タスクを削除しました"
-    redirect_to tasks_url
+    redirect_back(fallback_location: root_path)
   end
   
   private
   
   def set_task
-    @micropost = current_user.microposts.find_by(id: params[:id])
+    @task = current_user.tasks.find_by(id: params[:id])
     
-    unless @micropost
+    unless @task
       redirect_to root_url
     end
   end

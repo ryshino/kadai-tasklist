@@ -1,5 +1,5 @@
-<% if logget_in? %>
-  <%= render 'logget_in' %>
+<% if logged_in? %>
+  <%= render 'logged_in' %>
 <% else %>
   <%= link_to '新規登録', signup_path %>
   <%= link_to 'ログイン', login_path %>
